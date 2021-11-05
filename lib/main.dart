@@ -49,6 +49,12 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  String _textValue = "";
+  final _key = GlobalKey<FormFieldState<String>>();
+
+  // note that this is final - but why and how? unno
+  final _controller = TextEditingController.fromValue(
+      const TextEditingValue(text: "Initial value"));
 
   void _incrementCounter() {
     setState(() {
@@ -63,6 +69,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    print(_controller.text);
+
+    print("no way ${_key.currentState?.value}");
+
+    _controller.addListener(() {
+      setState(() {
+        _textValue = _controller.text;
+      });
+    });
+
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -75,6 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
+
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
@@ -95,8 +112,15 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            TextFormField(
+              key: _key,
+            ),
+
             const Text(
               'You :',
+            ),
+            TextField(
+              controller: _controller,
             ),
             // Row(
             //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -109,6 +133,11 @@ class _MyHomePageState extends State<MyHomePage> {
             //     Text("what"),
             //   ],
             // ),
+            ElevatedButton(
+                onPressed: () {
+                  print("Hello printer");
+                },
+                child: const Text("hello")),
 
             Container(
               decoration:
@@ -144,13 +173,101 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
+// this is an example
 
-// this is an example 
+// WeatherService.onForecastChange().listen((Forecast fct) {
+//   if(fct.sunny) {
+//     print("Sunny");
+//   } else {
+//     print("Not sunny");
+//   }
+// })
 
-WeatherService.onForecastChange().listen((Forecast fct) {
-  if(fct.sunny) {
-    print("Sunny");
-  } else {
-    print("Not sunny");
+class TapExample extends StatefulWidget {
+  // this now i guess is a constructor
+  TapExample({Key? key}) : super(key: key);
+
+  @override
+  _TapExampleState createState() => _TapExampleState();
+}
+
+class _TapExampleState extends State<TapExample> {
+  int _counter = 0;
+
+  // adding more states
+  bool _dragging = false;
+  Offset _move = Offset.zero;
+  int _dragCount = 0;
+
+  // more states
+  double _scale = 1.0;
+  bool _resizing = true;
+  int _scaleCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // and then we can add some other custom initialiation here
+    // maybe we initialize a database connection
   }
-})
+
+  @override
+  void dispose() {
+    // some other custom cleanup code
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+        // onTap: () {
+        // onDoubleTap: () {
+        // onLongPress: () {
+        //   setState(() {
+        //     // ok, so here we are using this set state
+        //     // we could have easily created a function of its own
+        //     _counter++;
+        //   });
+
+// note that we do get some detials about draginng here
+        // onHorizontalDragStart: (DragStartDetails details) {
+        //   setState(() {
+        //     _move = Offset.zero;
+        //     _dragging = true;
+        //   });
+        // },
+        // onHorizontalDragUpdate: (DragUpdateDetails details) {
+        //   setState(() {
+        //     _move += details.delta;
+        //   });
+        // },
+        // onHorizontalDragEnd: (DragEndDetails details) {
+        //   setState(() {
+        //     _dragging = false;
+        //     _dragCount++;
+        //   });
+        // },
+
+        onScaleStart: (ScaleStartDetails details) {
+          // this is avaialable by magic to us - we get it from the stateful widget
+          if (mounted) {
+            setState(() {
+              _scale = 1.0;
+            });
+          }
+        },
+        onScaleUpdate: (ScaleUpdateDetails details) {
+          setState(() {
+            _scale = details.scale;
+          });
+        },
+        onScaleEnd: (ScaleEndDetails details) {
+          setState(() {
+            _resizing = false;
+            _scaleCount++;
+          });
+        },
+        child:
+            Container(color: Colors.grey, child: Text("Tap count: $_counter")));
+  }
+}
