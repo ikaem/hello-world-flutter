@@ -68,10 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    print(_controller.text);
-
-    print("no way ${_key.currentState?.value}");
+f
 
     _controller.addListener(() {
       setState(() {
