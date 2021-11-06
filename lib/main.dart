@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   runApp(const MyApp());
@@ -51,6 +52,8 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   String _textValue = "";
   final _key = GlobalKey<FormFieldState<String>>();
+  final _formKey = GlobalKey<FormFieldState<String>>();
+  final _anotherFormKey = GlobalKey<FormFieldState<String>>();
 
   // note that this is final - but why and how? unno
   final _controller = TextEditingController.fromValue(
@@ -68,7 +71,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
-f
+  Widget build(BuildContext context) {
+    print("this is key value: ${_key.currentState?.value}");
+    print(
+        "this is regualr controller state that will actually be called on its own trigger: ${_controller.text} ");
 
     _controller.addListener(() {
       setState(() {
@@ -111,6 +117,46 @@ f
           children: <Widget>[
             TextFormField(
               key: _key,
+              // no need for type
+              validator: (String? value) {
+                return value == null || value.isEmpty
+                    ? "Please make sure there is no empty value"
+                    : null;
+              },
+              //     validator: (String value) {
+              //   return value?.isEmpty ? "Not empty" : null;
+              // }
+            ),
+
+            Form(
+                key: _anotherFormKey,
+                child: Column(
+                  children: <Widget>[
+                    TextFormField(
+                      validator: (String? value) {
+                        return value == null || value.isEmpty
+                            ? "Cannot be empty"
+                            : null;
+                      },
+                    ),
+                  ],
+                )),
+
+            Form(
+              key: _formKey,
+              child: Column(
+                children: <Widget>[
+                  TextFormField(),
+                  TextFormField(),
+                  Builder(
+                      builder: (BuildContext subcontext) => TextButton(
+                          onPressed: () {
+                            final valid = Form.of(subcontext)?.validate();
+                            print("valid: $valid");
+                          },
+                          child: const Text("Validate")))
+                ],
+              ),
             ),
 
             const Text(
@@ -268,3 +314,83 @@ class _TapExampleState extends State<TapExample> {
             Container(color: Colors.grey, child: Text("Tap count: $_counter")));
   }
 }
+// None of this works
+
+// class VerificationCodeInput extends StatefulWidget {
+//   final BorderSide borderSide;
+//   final onChanged;
+//   final controller;
+
+//   VerificationCodeInput(Key? key) : super(key: key)
+// }
+
+// class _VerificationCodeInputState extends State<VerificationCodeInput> {
+//   // now we override the buiuld method
+//   // inside we will have the controoler
+//   // and we also use onChanged ad Border side thing
+
+//   @override
+//   Widget build(BuildContext) {
+//     return TextField(
+//       controller: widget.controller,
+//       inputFormatters: [
+//         FilteringTextInputFormatter.allow(RegExp("[0-9]")),
+//         LengthLimitingTextInputFormatter(6),
+//       ],
+//       textAlign: TextAlign.center,
+//       decoration: InputDecoration(
+//           border: OutlineInputBorder(borderSide: widget.borderSide)),
+//       keyboardType: TextInputType.number,
+//       onChanged: widget.onChanged,
+//     );
+//   }
+// }
+
+
+// class _VerificationCodeFormFieldState extends State<VerificationCodeFormField> {
+//   final TextEditingController _controller = TextEditingController(text: "");
+
+//   @override 
+//   void initState() {
+//     super.initState();
+//     _controller.addListener(_controllerChanged);
+//   }
+
+//   void _controllerChanged() {
+//     didChange(_controller.text);
+//   }
+
+//   @override
+//   void reset() {
+//     super.reset();
+//     _controller.text = "";
+//   }
+
+//   @override
+//   void dispose() {
+//     _controller.removeListener(_controllerChanged);
+//   }
+// }
+
+// class VerificationCodeFormField extends FormField<String> {
+//   final TextEditingController controller;
+
+//   VerificationCodeFormField({
+//     Key? key,
+//     FormFieldSetter<String>? onSaved,
+//     this.controller,
+//     FormFieldValidator<String> validator,
+//   }): super(
+//     key: key,
+//     validator: validator,
+//     builder: (FormFieldState<String> field) {
+//       _VerificationCodeFormFieldState state = field;
+//       return VerificationCodeInput(
+//         controller: state._controller,
+//       );
+//     }
+//   )
+
+//   @override 
+//   FormFieldState<String> createState() => _VerificationCodeFormFieldState()
+// }
