@@ -7,6 +7,7 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -24,23 +25,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      // dont need it because we have "/"
-      // home: const MyHomePage(title: 'Flutter Demo Home Page'),
-      // routes: {
-      //   "/": (context) => const MyHomePage(title: "Flutter Demo Home Page"),
-      //   "/screen2": (context) => const AnotherScreen(title: "Go back")
-      // }
-      onGenerateRoute: (settings) {
-        if (settings.name == "/") {
-          return MaterialPageRoute(
-              builder: (context) =>
-                  const MyHomePage(title: "Flutter Demo Home Page"));
-        } else if (settings.name == "/screen2") {
-          return MaterialPageRoute(
-              builder: (context) =>
-                  AnotherScreen(title: settings.arguments as String));
-        }
-      },
+      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
@@ -130,19 +115,6 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            ElevatedButton(
-                onPressed: () {
-                  // i guess this is the top context
-                  // this is very cool
-                  // the reoute is already prerpared completely in the Material app
-                  Navigator.of(context)
-                      .pushNamed("/screen2", arguments: "Go back again");
-
-                  //     .push(MaterialPageRoute(builder: (context) {
-                  //   return const AnotherScreen(title: "Go back");
-                  // }));
-                },
-                child: const Text("Press this")),
             TextFormField(
               key: _key,
               // no need for type
@@ -155,6 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
               //   return value?.isEmpty ? "Not empty" : null;
               // }
             ),
+
             Form(
                 key: _anotherFormKey,
                 child: Column(
@@ -168,6 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ],
                 )),
+
             Form(
               key: _formKey,
               child: Column(
@@ -184,17 +158,30 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
             ),
+
             const Text(
               'You :',
             ),
             TextField(
               controller: _controller,
             ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: const [Text("Joe"), Text("What"), Text("What")],
+            // ),
+            // Stack(
+            //   children: const [
+            //     Text("what"),
+            //     Text("what"),
+            //     Text("what"),
+            //   ],
+            // ),
             ElevatedButton(
                 onPressed: () {
                   print("Hello printer");
                 },
                 child: const Text("hello")),
+
             Container(
               decoration:
                   BoxDecoration(border: Border.all(), color: Colors.yellow),
@@ -202,6 +189,17 @@ class _MyHomePageState extends State<MyHomePage> {
               margin: const EdgeInsets.all(14),
               child: const Text("Lovely insets"),
             ),
+
+            // const Text(
+            //   "Some more text",
+            //   style: TextStyle(color: Colors.red, fontSize: 14),
+            //   textAlign: TextAlign.center,
+            // ),
+            // Image.asset("images/logo.png"),
+            // const Image(image: AssetImage("images/logo.png")),
+            // const Image(
+            //     image: NetworkImage(
+            //         "https://i.pinimg.com/564x/e8/9e/94/e89e94a6ed5075c7c3acfa09390c8690.jpg")),
             Text(
               '$_counter',
               style: Theme.of(context).textTheme.headline4,
@@ -218,6 +216,184 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
+// this is an example
+
+// WeatherService.onForecastChange().listen((Forecast fct) {
+//   if(fct.sunny) {
+//     print("Sunny");
+//   } else {
+//     print("Not sunny");
+//   }
+// })
+
+class TapExample extends StatefulWidget {
+  // this now i guess is a constructor
+  TapExample({Key? key}) : super(key: key);
+
+  @override
+  _TapExampleState createState() => _TapExampleState();
+}
+
+class _TapExampleState extends State<TapExample> {
+  int _counter = 0;
+
+  // adding more states
+  bool _dragging = false;
+  Offset _move = Offset.zero;
+  int _dragCount = 0;
+
+  // more states
+  double _scale = 1.0;
+  bool _resizing = true;
+  int _scaleCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // and then we can add some other custom initialiation here
+    // maybe we initialize a database connection
+  }
+
+  @override
+  void dispose() {
+    // some other custom cleanup code
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+        // onTap: () {
+        // onDoubleTap: () {
+        // onLongPress: () {
+        //   setState(() {
+        //     // ok, so here we are using this set state
+        //     // we could have easily created a function of its own
+        //     _counter++;
+        //   });
+
+// note that we do get some detials about draginng here
+        // onHorizontalDragStart: (DragStartDetails details) {
+        //   setState(() {
+        //     _move = Offset.zero;
+        //     _dragging = true;
+        //   });
+        // },
+        // onHorizontalDragUpdate: (DragUpdateDetails details) {
+        //   setState(() {
+        //     _move += details.delta;
+        //   });
+        // },
+        // onHorizontalDragEnd: (DragEndDetails details) {
+        //   setState(() {
+        //     _dragging = false;
+        //     _dragCount++;
+        //   });
+        // },
+
+        onScaleStart: (ScaleStartDetails details) {
+          // this is avaialable by magic to us - we get it from the stateful widget
+          if (mounted) {
+            setState(() {
+              _scale = 1.0;
+            });
+          }
+        },
+        onScaleUpdate: (ScaleUpdateDetails details) {
+          setState(() {
+            _scale = details.scale;
+          });
+        },
+        onScaleEnd: (ScaleEndDetails details) {
+          setState(() {
+            _resizing = false;
+            _scaleCount++;
+          });
+        },
+        child:
+            Container(color: Colors.grey, child: Text("Tap count: $_counter")));
+  }
+}
+// None of this works
+
+// class VerificationCodeInput extends StatefulWidget {
+//   final BorderSide borderSide;
+//   final onChanged;
+//   final controller;
+
+//   VerificationCodeInput(Key? key) : super(key: key)
+// }
+
+// class _VerificationCodeInputState extends State<VerificationCodeInput> {
+//   // now we override the buiuld method
+//   // inside we will have the controoler
+//   // and we also use onChanged ad Border side thing
+
+//   @override
+//   Widget build(BuildContext) {
+//     return TextField(
+//       controller: widget.controller,
+//       inputFormatters: [
+//         FilteringTextInputFormatter.allow(RegExp("[0-9]")),
+//         LengthLimitingTextInputFormatter(6),
+//       ],
+//       textAlign: TextAlign.center,
+//       decoration: InputDecoration(
+//           border: OutlineInputBorder(borderSide: widget.borderSide)),
+//       keyboardType: TextInputType.number,
+//       onChanged: widget.onChanged,
+//     );
+//   }
+// }
+
+// class _VerificationCodeFormFieldState extends State<VerificationCodeFormField> {
+//   final TextEditingController _controller = TextEditingController(text: "");
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _controller.addListener(_controllerChanged);
+//   }
+
+//   void _controllerChanged() {
+//     didChange(_controller.text);
+//   }
+
+//   @override
+//   void reset() {
+//     super.reset();
+//     _controller.text = "";
+//   }
+
+//   @override
+//   void dispose() {
+//     _controller.removeListener(_controllerChanged);
+//   }
+// }
+
+// class VerificationCodeFormField extends FormField<String> {
+//   final TextEditingController controller;
+
+//   VerificationCodeFormField({
+//     Key? key,
+//     FormFieldSetter<String>? onSaved,
+//     this.controller,
+//     FormFieldValidator<String> validator,
+//   }): super(
+//     key: key,
+//     validator: validator,
+//     builder: (FormFieldState<String> field) {
+//       _VerificationCodeFormFieldState state = field;
+//       return VerificationCodeInput(
+//         controller: state._controller,
+//       );
+//     }
+//   )
+
+//   @override
+//   FormFieldState<String> createState() => _VerificationCodeFormFieldState()
+// }
+
 class AnotherScreen extends StatelessWidget {
   const AnotherScreen({Key? key, required this.title}) : super(key: key);
 
@@ -230,8 +406,6 @@ class AnotherScreen extends StatelessWidget {
       child: ElevatedButton(
         child: Text(title),
         onPressed: () {
-          // Navigator.of(context).pop();
-          Navigator.pop(context);
           // something
         },
       ),
