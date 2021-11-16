@@ -1,16 +1,23 @@
 // lib/main.dart
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import "package:firebase_core/firebase_core.dart";
 
 import "package:hello_world/red_text_widget.dart";
 
-void main() {
+void main() async {
+// we intiialize it here
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -43,6 +50,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  FirebaseAuth auth = FirebaseAuth.instance;
+
   int _counter = 0;
   String _textValue = "";
   final _key = GlobalKey<FormFieldState<String>>();
@@ -53,10 +62,70 @@ class _MyHomePageState extends State<MyHomePage> {
   final _controller = TextEditingController.fromValue(
       const TextEditingValue(text: "Initial value"));
 
+  @override
+  void initState() {
+    // we use this method to setup things
+    // not sure if need to call the instance again
+    // note the question mark
+    // FirebaseAuth.instance.authStateChanges().listen((User? user) {
+    // or, if we have insance defined above, we can just use that to listen
+    auth.authStateChanges().listen((user) {
+      if (user == null) {
+        // i guess signout user }
+
+      } else {
+        // i guess signin user - or he is signed in
+
+      }
+    });
+
+    // we also need to injitialize the state
+
+    super.initState();
+  }
+
   void _incrementCounter() {
     setState(() {
       _counter++;
     });
+  }
+
+  void _signIn() async {
+    try {
+      // so i guess we get user crednetial
+      UserCredential userCredential = await auth.signInWithEmailAndPassword(
+          email: "some@email.com", password: "password");
+
+      // the we need to get user? not sure if the same instance can be used, oir we always have to get a new one
+
+      User? user = auth.currentUser;
+
+// here we check some email verification state
+// not really sure if this is needed
+      if (user != null && !user.emailVerified) {
+        await user.sendEmailVerification();
+      }
+    }
+    //  this is an interesnting part
+    // so we dont really just generally catch
+    /* we catch a specific error  */
+    on FirebaseAuthException catch (e, stackTrace) {
+      if (e.code == "user-not-found") {
+        // do somethign if user is not found
+      } else if (e.code == "wrong-password") {
+        // this is wrong password      //
+      }
+
+      // and then there is something called record crash
+      _recordCrash(e, stackTrace);
+    }
+  }
+
+  void _recordCrash(Exception e, StackTrace stackTrace) async {
+    // we need to setup firebase foncig
+    // but we probably need a plugin for this
+    // await FirebaseCrashAnalytics.instance
+    //     .recordError(e, stackTrace, reason: "bad times", fatal: true);
   }
 
   @override
