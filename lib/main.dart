@@ -121,13 +121,16 @@ class _MyHomePageState extends State<MyHomePage> {
         adUnitId: "AdUnitId",
         // this is a widget
         request: const AdRequest(),
-        rewardedAdLoadCallback: RewardedAdLoadCallback(onAdLoaded: (ad) {
-          _myRewarded = ad;
-          /* we will define this  */
-          _listenOnAdvert();
-        }, onAdFailedToLoad: (error) async {
-          print("Failed to load ad ${error.message}");
-        }));
+        rewardedAdLoadCallback: RewardedAdLoadCallback(
+          onAdLoaded: (ad) {
+            _myRewarded = ad;
+            /* we will define this  */
+            _listenOnAdvert();
+          },
+          onAdFailedToLoad: (error) async {
+            print("Failed to load ad ${error.message}");
+          },
+        ));
   }
 
   void _listenOnAdvert() {
@@ -142,6 +145,13 @@ class _MyHomePageState extends State<MyHomePage> {
     }, onAdFailedToShowFullScreenContent: (RewardedAd ad, AdError error) async {
       print("$ad onAdFailedToShowFullScreenContent: $error");
       await ad.dispose();
+    });
+  }
+
+  void _showAdvert() {
+    _myRewarded!.show(
+        onUserEarnedReward: (RewardedAd ad, RewardItem rewardItem) {
+      print("$ad onUserEarnedReward $rewardItem");
     });
   }
 
